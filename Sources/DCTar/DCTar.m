@@ -371,9 +371,12 @@ static const char template_header[] = {
     char nameBytes[TAR_NAME_SIZE + 1]; // TAR_NAME_SIZE+1 for nul char at end
     
     memset(&nameBytes, '\0', TAR_NAME_SIZE + 1); // Fill byte array with nul char
-    memcpy(&nameBytes, [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_NAME_POSITION, TAR_NAME_SIZE)
-                                orLocation:offset + TAR_NAME_POSITION andLength:TAR_NAME_SIZE].bytes, TAR_NAME_SIZE);
-    NSString *name = [NSString stringWithCString:nameBytes encoding:NSASCIIStringEncoding];
+    NSData *data = [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_NAME_POSITION, TAR_NAME_SIZE)
+                            orLocation:offset + TAR_NAME_POSITION andLength:TAR_NAME_SIZE];
+    if ([data length] != 0) {
+        memcpy(&nameBytes, data.bytes, TAR_NAME_SIZE);
+    }
+    NSString *name = [NSString stringWithCString: nameBytes encoding:NSASCIIStringEncoding];
     return name;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +389,7 @@ static const char template_header[] = {
                             orLocation:offset + TAR_SIZE_POSITION andLength:TAR_SIZE_SIZE];
     if ([data length] != 0) {
         memcpy(&sizeBytes, data.bytes, TAR_SIZE_SIZE);
-    } 
+    }
     unsigned long long size = strtol(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal
     return size;
 }

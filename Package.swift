@@ -34,6 +34,7 @@ let package = Package(
             ],
             resources: [
                 .copy("Resources/LICENSE"),
+                .copy("Resources/LICENSE.tar.gz"),
             ]
         ),
     ]

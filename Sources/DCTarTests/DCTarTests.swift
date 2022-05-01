@@ -27,13 +27,13 @@ class DCTarTests: XCTestCase {
          */
     }
     
-    func testCompressTARGZ() throws {
+    func testCompressDecompressTARGZ() throws {
         let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let destinationTar = tmpDir.appendingPathComponent("LICENSE.tar.gz")
         let container = tmpDir.appendingPathComponent("LICENSE")
         let result = tmpDir.appendingPathComponent("LICENSE-Result")
-
         try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        
         print(container)
         print(destinationTar)
         
@@ -56,9 +56,28 @@ class DCTarTests: XCTestCase {
         /// We have all our Steps
         let data = try Data(contentsOf: fileURL)
         XCTAssertEqual(decompressed, data)
-
         
     }
     
-
+    func testDecompressTARGZ() async throws {
+        let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let container = tmpDir.appendingPathComponent("RESULT")
+        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        print(container)
+        guard let fileURL = Bundle.module.url(forResource: "LICENSE.tar", withExtension: "gz") else {
+            XCTFail("Couldn't load resource")
+            return
+        }
+        
+        
+        try DCTar.decompressFile(atPath: fileURL.path, toPath: container.path)
+        
+        guard let fileURL = Bundle.module.url(forResource: "LICENSE", withExtension: nil) else {
+            XCTFail("Couldn't load resource")
+            return
+        }
+        let bundleData = try Data(contentsOf: fileURL)
+        let extractedData = try Data(contentsOf: container.appendingPathComponent("LICENSE"))
+        XCTAssertEqual(bundleData, extractedData)
+    }
 }
