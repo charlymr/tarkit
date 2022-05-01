@@ -356,9 +356,13 @@ static const char template_header[] = {
 + (char)typeForObject:(id)object atOffset:(unsigned long long)offset
 {
     char type;
-    
-    memcpy(&type, [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_TYPE_POSITION, 1)
-                           orLocation:offset + TAR_TYPE_POSITION andLength:1].bytes, 1);
+    NSData *data = [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_TYPE_POSITION, 1)
+                             orLocation:offset + TAR_TYPE_POSITION andLength: 1];
+    if ([data length] != 0) {
+        memcpy(&type, data.bytes, 1);
+    } else {
+        memset(&type, '0', 1);
+    }
     return type;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,8 +382,11 @@ static const char template_header[] = {
     char sizeBytes[TAR_SIZE_SIZE + 1]; // TAR_SIZE_SIZE+1 for nul char at end
     
     memset(&sizeBytes, '\0', TAR_SIZE_SIZE + 1); // Fill byte array with nul char
-    memcpy(&sizeBytes, [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_SIZE_POSITION, TAR_SIZE_SIZE)
-                                orLocation:offset + TAR_SIZE_POSITION andLength:TAR_SIZE_SIZE].bytes, TAR_SIZE_SIZE);
+    NSData *data = [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_SIZE_POSITION, TAR_SIZE_SIZE)
+                            orLocation:offset + TAR_SIZE_POSITION andLength:TAR_SIZE_SIZE];
+    if ([data length] != 0) {
+        memcpy(&sizeBytes, data.bytes, TAR_SIZE_SIZE);
+    } 
     unsigned long long size = strtol(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal
     return size;
 }
