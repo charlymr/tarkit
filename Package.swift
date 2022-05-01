@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "DCTar",
+    name: "TARKit",
     platforms: [
         .iOS(.v9),
         .tvOS(.v9),
@@ -12,12 +12,12 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "DCTar",
-            targets: ["DCTar"]),
+            name: "TARKit",
+            targets: ["TARKit"]),
     ],
     targets: [
         .target(
-            name: "DCTar",
+            name: "TARKit",
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("DCTar"),
@@ -28,9 +28,9 @@ let package = Package(
                 .linkedLibrary("iconv")
             ]),
         .testTarget(
-            name: "DCTarTests",
+            name: "TARKitTests",
             dependencies: [
-                .target(name: "DCTar"),
+                .target(name: "TARKit"),
             ],
             resources: [
                 .copy("Resources/LICENSE"),
