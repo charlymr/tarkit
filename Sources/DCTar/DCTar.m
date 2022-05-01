@@ -25,47 +25,47 @@
  * Define structure of POSIX 'ustar' tar header.
  + Provided by libarchive.
  */
-#define	USTAR_name_offset 0
-#define	USTAR_name_size 100
-#define	USTAR_mode_offset 100
-#define	USTAR_mode_size 6
-#define	USTAR_mode_max_size 8
-#define	USTAR_uid_offset 108
-#define	USTAR_uid_size 6
-#define	USTAR_uid_max_size 8
-#define	USTAR_gid_offset 116
-#define	USTAR_gid_size 6
-#define	USTAR_gid_max_size 8
-#define	USTAR_size_offset 124
-#define	USTAR_size_size 11
-#define	USTAR_size_max_size 12
-#define	USTAR_mtime_offset 136
-#define	USTAR_mtime_size 11
-#define	USTAR_mtime_max_size 11
-#define	USTAR_checksum_offset 148
-#define	USTAR_checksum_size 8
-#define	USTAR_typeflag_offset 156
-#define	USTAR_typeflag_size 1
-#define	USTAR_linkname_offset 157
-#define	USTAR_linkname_size 100
-#define	USTAR_magic_offset 257
-#define	USTAR_magic_size 6
-#define	USTAR_version_offset 263
-#define	USTAR_version_size 2
-#define	USTAR_uname_offset 265
-#define	USTAR_uname_size 32
-#define	USTAR_gname_offset 297
-#define	USTAR_gname_size 32
-#define	USTAR_rdevmajor_offset 329
-#define	USTAR_rdevmajor_size 6
-#define	USTAR_rdevmajor_max_size 8
-#define	USTAR_rdevminor_offset 337
-#define	USTAR_rdevminor_size 6
-#define	USTAR_rdevminor_max_size 8
-#define	USTAR_prefix_offset 345
-#define	USTAR_prefix_size 155
-#define	USTAR_padding_offset 500
-#define	USTAR_padding_size 12
+#define    USTAR_name_offset 0
+#define    USTAR_name_size 100
+#define    USTAR_mode_offset 100
+#define    USTAR_mode_size 6
+#define    USTAR_mode_max_size 8
+#define    USTAR_uid_offset 108
+#define    USTAR_uid_size 6
+#define    USTAR_uid_max_size 8
+#define    USTAR_gid_offset 116
+#define    USTAR_gid_size 6
+#define    USTAR_gid_max_size 8
+#define    USTAR_size_offset 124
+#define    USTAR_size_size 11
+#define    USTAR_size_max_size 12
+#define    USTAR_mtime_offset 136
+#define    USTAR_mtime_size 11
+#define    USTAR_mtime_max_size 11
+#define    USTAR_checksum_offset 148
+#define    USTAR_checksum_size 8
+#define    USTAR_typeflag_offset 156
+#define    USTAR_typeflag_size 1
+#define    USTAR_linkname_offset 157
+#define    USTAR_linkname_size 100
+#define    USTAR_magic_offset 257
+#define    USTAR_magic_size 6
+#define    USTAR_version_offset 263
+#define    USTAR_version_size 2
+#define    USTAR_uname_offset 265
+#define    USTAR_uname_size 32
+#define    USTAR_gname_offset 297
+#define    USTAR_gname_size 32
+#define    USTAR_rdevmajor_offset 329
+#define    USTAR_rdevmajor_size 6
+#define    USTAR_rdevmajor_max_size 8
+#define    USTAR_rdevminor_offset 337
+#define    USTAR_rdevminor_size 6
+#define    USTAR_rdevminor_max_size 8
+#define    USTAR_prefix_offset 345
+#define    USTAR_prefix_size 155
+#define    USTAR_padding_offset 500
+#define    USTAR_padding_size 12
 
 
 static const char template_header[] = {
@@ -87,7 +87,7 @@ static const char template_header[] = {
     /* Initial checksum value: 8 spaces */
     ' ',' ',' ',' ',' ',' ',' ',' ',
     /* Typeflag: 1 byte */
-    '0',			/* '0' = regular file */
+    '0',            /* '0' = regular file */
     /* Linkname: 100 bytes */
     0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
@@ -166,7 +166,8 @@ static const char template_header[] = {
     //does decompression as needed (based on if the file ends .gz)
     NSFileManager *manager = [NSFileManager defaultManager];
     if([manager fileExistsAtPath:filePath]) {
-        NSDictionary *attributes = [manager attributesOfItemAtPath:filePath error:nil];
+//        NSDictionary *attributes = [manager attributesOfItemAtPath:filePath error:nil];
+//        unsigned long long size = [attributes[NSFileSize] longLongValue];
         NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:filePath];
         
         if([filePath hasSuffix:@".gz"]) {
@@ -175,8 +176,9 @@ static const char template_header[] = {
             [manager removeItemAtPath:tarPath error:nil];
             if([self fileInflate:fileHandle isGzip:YES toPath:tarPath]) {
                 [fileHandle closeFile];
-                attributes = [manager attributesOfItemAtPath:tarPath error:nil];
-                fileHandle = [NSFileHandle fileHandleForReadingAtPath:tarPath];
+//                attributes = [manager attributesOfItemAtPath:tarPath error:nil];
+//                size = [attributes[NSFileSize] longLongValue];
+//                fileHandle = [NSFileHandle fileHandleForReadingAtPath:tarPath];
                 filePath = tarPath;
             }
         }
@@ -216,7 +218,6 @@ static const char template_header[] = {
         memset(&block, '\0', TAR_BLOCK_SIZE*2);
         [fileHandle writeData:[NSData dataWithBytes:block length:TAR_BLOCK_SIZE*2]];
         [fileHandle closeFile];
-        free(block);
         return YES;
     }
     if(error)
@@ -369,7 +370,6 @@ static const char template_header[] = {
     memcpy(&nameBytes, [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_NAME_POSITION, TAR_NAME_SIZE)
                                 orLocation:offset + TAR_NAME_POSITION andLength:TAR_NAME_SIZE].bytes, TAR_NAME_SIZE);
     NSString *name = [NSString stringWithCString:nameBytes encoding:NSASCIIStringEncoding];
-    free(nameBytes);
     return name;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -381,7 +381,6 @@ static const char template_header[] = {
     memcpy(&sizeBytes, [self dataForObject:object inRange:NSMakeRange((uInt)offset + TAR_SIZE_POSITION, TAR_SIZE_SIZE)
                                 orLocation:offset + TAR_SIZE_POSITION andLength:TAR_SIZE_SIZE].bytes, TAR_SIZE_SIZE);
     unsigned long long size = strtol(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal
-    free(sizeBytes);
     return size;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -503,11 +502,6 @@ static const char template_header[] = {
     buffer[USTAR_checksum_offset + 6] = '\0';
     format_octal(checksum, buffer + USTAR_checksum_offset, 6);
     [outputFileHandle writeData:[NSData dataWithBytes:buffer length:TAR_BLOCK_SIZE]];
-    
-    free(buffer);
-    free(nameChar);
-    free(unameChar);
-    free(gnameChar);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 +(void)chunkedWriteDataFromPath:(NSString *)path toFileHandle:(NSFileHandle*) outputFileHandle {
@@ -527,7 +521,6 @@ static const char template_header[] = {
             char buffer[padding];
             memset(&buffer, '\0', padding);
             [outputFileHandle writeData:[NSData dataWithBytes:buffer length:TAR_BLOCK_SIZE*2]];
-            free(buffer);
         }
         offset += chunkSize;
     }
@@ -600,7 +593,7 @@ static int format_octal(int64_t v, char *p, int s)
         return (-1);
     }
     
-    p += s;		/* Start at the end and work backwards. */
+    p += s;        /* Start at the end and work backwards. */
     while (s-- > 0) {
         *--p = (char)('0' + (v & 7));
         v >>= 3;
@@ -698,7 +691,7 @@ static int format_octal(int64_t v, char *p, int s)
             else if(status == Z_BUF_ERROR)
                 continue;
             else if (status != Z_OK) {
-                done = YES;
+//                done = YES;
                 return NO;
             }
             NSInteger have = chunkSize - strm.avail_out;
@@ -805,7 +798,7 @@ static int format_octal(int64_t v, char *p, int s)
             else if(status == Z_BUF_ERROR)
                 continue;
             else if (status != Z_OK) {
-                done = YES;
+//                done = YES;
                 return NO;
             }
             NSInteger have = chunkSize - strm.avail_out;
